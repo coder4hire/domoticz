@@ -1,5 +1,5 @@
 #set to minimum version that supports clean build
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(domoticz)
 
@@ -27,7 +27,7 @@ option(USE_BUILTIN_SQLITE "Use builtin sqlite library" NO)
 option(USE_BUILTIN_JWTCPP "Use builtin JWT-CPP" YES)
 
 # Optional dependencies
-option(USE_PYTHON "Use Python for Plugins and Event-Scripts" YES)
+option(USE_PYTHON "Use Python for Plugins and Event-Scripts" NO)
 option(INCLUDE_LINUX_I2C "Include I2C support" YES)
 option(INCLUDE_SPI "Include SPI support" YES)
 option(WITH_LIBUSB "Enable libusb support" YES)
