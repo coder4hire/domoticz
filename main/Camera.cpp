@@ -231,6 +231,63 @@ bool CCameraHandler::TakeUVCSnapshot(const std::string &device, std::vector<unsi
 	return false;
 }
 
+bool CCameraHandler::TakeGallerySnapshot(std::vector<unsigned char> &camimage)
+{
+	static int curFrame=0; // Current image number to pick
+
+	// Let's harcode this path for now to avoid security breach - possibility of reading any folder via this image reading function
+	std::string galleryPath="/tmp/cam0/";
+
+	char fileName[]="/00.jpg";
+	fileName[1] = '0' + (curFrame % 100) / 10;
+	fileName[2] = '0' + curFrame % 10;
+
+	std::string inputFileName = galleryPath + fileName;
+
+	// Trying to open the file, if something went wrong, reset frame counter
+	//_log.Log(LOG_STATUS, "CAMERA GALLERY: Opening %s",inputFileName.c_str());
+	FILE* fpImg = fopen(inputFileName.c_str(), "rb");
+	if (!fpImg)
+	{
+		curFrame = 0;
+		fileName[1] = '0';
+		fileName[2] = '0';
+		std::string inputFileName = galleryPath + fileName;
+		fpImg = fopen(inputFileName.c_str(), "rb");
+	}
+	if (!fpImg)
+	{
+		_log.Log(LOG_STATUS, "CAMERA GALLERY: No captured files");
+		return false;
+	}
+
+	// Reading image from list
+	fseek(fpImg, 0, SEEK_END);
+	long sz = ftell(fpImg);
+	fseek(fpImg, 0, SEEK_SET);
+
+	camimage.resize(sz);
+
+	try
+	{
+		if (!fread(&camimage[0], sz, 1, fpImg))
+		{
+			_log.Log(LOG_STATUS, "CAMERA GALLERY: Canot read image file");
+			fclose(fpImg);
+			return false;
+		}
+	}
+	catch (...)
+	{
+	}
+	fclose(fpImg);
+	curFrame++;
+
+	//sleep(2); // Setting up proper framerate
+
+	return true;
+}
+
 bool CCameraHandler::TakeSnapshot(const uint64_t CamID, std::vector<unsigned char> &camimage)
 {
 	std::lock_guard<std::mutex> l(m_mutex);
@@ -248,6 +305,8 @@ bool CCameraHandler::TakeSnapshot(const uint64_t CamID, std::vector<unsigned cha
 		return TakeRaspberrySnapshot(camimage);
 	if (pCamera->ImageURL == "uvccapture.cgi")
 		return TakeUVCSnapshot(pCamera->Username, camimage);
+	if (pCamera->ImageURL == "gallery.cgi")
+		return TakeGallerySnapshot(camimage);
 
 	std::vector<std::string> ExtraHeaders;
 	return HTTPClient::GETBinary(szURL, ExtraHeaders, camimage, 5);

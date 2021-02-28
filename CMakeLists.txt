@@ -1,5 +1,5 @@
 #set to minimum version that supports clean build
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(domoticz)
 
@@ -26,7 +26,7 @@ option(USE_BUILTIN_MQTT "Use builtin Mosquitto library" YES)
 option(USE_BUILTIN_SQLITE "Use builtin sqlite library" YES)
 
 # Optional dependencies
-option(USE_PYTHON "Use Python for Plugins and Event-Scripts" YES)
+option(USE_PYTHON "Use Python for Plugins and Event-Scripts" NO)
 option(INCLUDE_LINUX_I2C "Include I2C support" YES)
 option(INCLUDE_SPI "Include SPI support" YES)
 option(WITH_LIBUSB "Enable libusb support" YES)
@@ -750,10 +750,10 @@ ELSE()
   target_link_libraries(domoticz -lrt -lresolv ${EXECINFO_LIBRARIES})
 ENDIF()
 
-IF(USE_PRECOMPILED_HEADER)
-  message(STATUS "Using precompiled headers")
-  target_precompile_headers(domoticz PRIVATE "main/stdafx.h")
-ENDIF(USE_PRECOMPILED_HEADER)
+#IF(USE_PRECOMPILED_HEADER)
+#  message(STATUS "Using precompiled headers")
+#  target_precompile_headers(domoticz PRIVATE "main/stdafx.h")
+#ENDIF(USE_PRECOMPILED_HEADER)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
   option(USE_STATIC_LIBSTDCXX "Build with static libgcc/libstdc++ libraries" YES)

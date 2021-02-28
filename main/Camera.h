@@ -39,6 +39,8 @@ public:
   bool TakeSnapshot(const std::string &CamID, std::vector<unsigned char> &camimage);
   bool TakeRaspberrySnapshot(std::vector<unsigned char> &camimage);
   bool TakeUVCSnapshot(const std::string &device, std::vector<unsigned char> &camimage);
+  bool TakeGallerySnapshot(std::vector<unsigned char> &camimage);
+
   cameraDevice *GetCamera(const uint64_t CamID);
   cameraDevice *GetCamera(const std::string &CamID);
   uint64_t IsDevSceneInCamera(const unsigned char DevSceneType, const uint64_t DevSceneID);
