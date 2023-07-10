@@ -63,5 +63,6 @@ private:
 	std::mutex m_mutex;
 	unsigned char m_seconds_counter;
 	std::vector<cameraDevice> m_cameradevices;
+    int m_last_gallery_stamp;
 };
 
