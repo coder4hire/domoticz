@@ -13,6 +13,7 @@
 #include "WebServer.h"
 #include "../webserver/cWebem.h"
 #include <json/json.h>
+#include <time.h>
 
 #define CAMERA_POLL_INTERVAL 30
 
@@ -21,6 +22,7 @@ extern std::string szUserDataFolder;
 CCameraHandler::CCameraHandler()
 {
 	m_seconds_counter = 0;
+        m_last_gallery_stamp = 0;
 }
 
 void CCameraHandler::ReloadCameras()
@@ -293,6 +295,19 @@ bool CCameraHandler::TakeGallerySnapshot(std::vector<unsigned char> &camimage)
 
 	camimage.resize(sz);
 
+    time_t now;
+    time(&now);
+    if(m_last_gallery_stamp)
+    {
+        long long delay = (long long)m_last_gallery_stamp+2-now;
+        if(delay>0)
+        {
+            sleep(delay);
+        }
+        m_last_gallery_stamp=now;
+    }
+
+
 	try
 	{
 		if (!fread(&camimage[0], sz, 1, fpImg))
@@ -307,8 +322,6 @@ bool CCameraHandler::TakeGallerySnapshot(std::vector<unsigned char> &camimage)
 	}
 	fclose(fpImg);
 	curFrame++;
-
-	//sleep(2); // Setting up proper framerate
 
 	return true;
 }
